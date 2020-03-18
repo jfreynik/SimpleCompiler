@@ -1,25 +1,35 @@
 <?php
 
-if (!http_response_code()) {
-    new SimpleCompiler(array (
-        "js_options" => array (
-            "root" => dirname(dirname(__FILE__))."/tests/js",
-            // "WHITESPACE_ONLY", "SIMPLE_OPTIMIZATIONS", "ADVANCED_OPTIMIZATIONS",
-            "compilation_level" => "SIMPLE_OPTIMIZATIONS", 
-            "output_format" => "text",
-            "output_info" => "compiled_code",
-            "ext" => "js",
-            "out" => dirname(dirname(__FILE__))."/bin/output.js",
-        ),
+/**
+ * CLI PHP application that uses public HTTP REST API services
+ * to compile CSS and JS files.
+ * @author jfreynik
+ * @version 0.0.1
+ */
 
-        "css_options" => array (
-            "root" => dirname(dirname(__FILE__))."/tests/css",
-            "ext" => "css",
-            "out" => dirname(dirname(__FILE__))."/bin/output.css",
-        ),
-
-    ));
+if (http_response_code()) {
+    // no direct web access
+    exit;
 }
+
+new SimpleCompiler(array (
+    "js_options" => array (
+        "root" => dirname(dirname(__FILE__))."/tests/js",
+        // "WHITESPACE_ONLY", "SIMPLE_OPTIMIZATIONS", "ADVANCED_OPTIMIZATIONS",
+        "compilation_level" => "SIMPLE_OPTIMIZATIONS", 
+        "output_format" => "text",
+        "output_info" => "compiled_code",
+        "ext" => "js",
+        "out" => dirname(dirname(__FILE__))."/tests/bin/output.js",
+    ),
+
+    "css_options" => array (
+        "root" => dirname(dirname(__FILE__))."/tests/css",
+        "ext" => "css",
+        "out" => dirname(dirname(__FILE__))."/tests/bin/output.css",
+    ),
+
+));
 
 class SimpleCompiler {
 
