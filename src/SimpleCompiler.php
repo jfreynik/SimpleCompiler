@@ -1,55 +1,43 @@
 <?php
 
+namespace hydra\compiler;
+
 /**
- * CLI PHP application that uses public HTTP REST API services
- * to compile CSS and JS files.
+ * 
  * @author jfreynik
  * @version 0.0.1
  */
 
-if (http_response_code()) {
-    // no direct web access
-    exit;
-}
+class AssetCompiler {
 
-new SimpleCompiler(array (
-    "js_options" => array (
-        "root" => dirname(dirname(__FILE__))."/tests/js",
-        // "WHITESPACE_ONLY", "SIMPLE_OPTIMIZATIONS", "ADVANCED_OPTIMIZATIONS",
-        "compilation_level" => "SIMPLE_OPTIMIZATIONS", 
-        "output_format" => "text",
-        "output_info" => "compiled_code",
-        "ext" => "js",
-        "out" => dirname(dirname(__FILE__))."/tests/bin/output.js",
-    ),
+    protected $jsOptions;
 
-    "css_options" => array (
-        "root" => dirname(dirname(__FILE__))."/tests/css",
-        "ext" => "css",
-        "out" => dirname(dirname(__FILE__))."/tests/bin/output.css",
-    ),
+    protected $cssOptions;
 
-));
+    public function __construct () {
 
-class SimpleCompiler {
+        // Closure Compiler Options
+        $this->jsOptions = array (
+            // "root" => dirname(dirname(__FILE__))."/tests/js",
+            // "WHITESPACE_ONLY", "SIMPLE_OPTIMIZATIONS", "ADVANCED_OPTIMIZATIONS",
+            "compilation_level" => "SIMPLE_OPTIMIZATIONS", 
+            "output_format" => "text",
+            "output_info" => "compiled_code",
+            "separator" => ";",
+            "ext" => "js",
+            // "out" => dirname(dirname(__FILE__))."/tests/bin/output.js",
+        );
 
-    protected $config;
-
-    public function __construct ($config = array ()) {
-        $this->config = $config;
-
-        if (isset($this->config["js_options"])) {
-            $this->compileJS();
-        }
-
-        if (isset($this->config["css_options"])) {
-            $this->compileCSS();
-        }
+        // CSS Minifier Options
+        $this->cssOptions = array (
+            // "root" => dirname(dirname(__FILE__))."/tests/css",
+            "ext" => "css",
+            // "out" => dirname(dirname(__FILE__))."/tests/bin/output.css",
+        );
     }
 
-    public function compileJS () {
-        $cfg = $this->config;
-        $opt = $cfg["js_options"];
+    public function compileJS ($jsOptions = array ()) {
+        $opt = array_merge($this->jsOptions, $jsOptions);
 
         if (!isset($opt["out"])) {
             return false;
@@ -81,17 +69,12 @@ class SimpleCompiler {
             "output_info" => $opt["output_info"],
         ));
 
-        file_put_contents($opt["out"], $code);
-        return true;
+        // file_put_contents($opt["out"], $code);
+        return $code;
     }
 
-    public function compileCSS () {
-        $cfg = $this->config;
-        $opt = $cfg["css_options"];
-
-        if (!isset($opt["out"])) {
-            return false;
-        }
+    public function compileCSS ($cssOptions = array ()) {
+        $opt = array_merge($this->cssOptions, $cssOptions);
 
         $dir = $this->scan($opt["root"]);
         $code = array();
@@ -116,8 +99,8 @@ class SimpleCompiler {
             "input" => implode(";", $code),
         ));
 
-        file_put_contents($opt["out"], $code);
-        return true;
+        // file_put_contents($opt["out"], $code);
+        return $code;
 
     }
 
